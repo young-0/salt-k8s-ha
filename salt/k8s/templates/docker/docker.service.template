@@ -1,13 +1,11 @@
 [Unit]
 Description=Docker Application Container Engine
 Documentation=http://docs.docker.com
-After=network.target flannel.service
-Requires=flannel.service
+After=network.target
 
 [Service]
 Type=notify
-EnvironmentFile=-/run/flannel/docker
-ExecStart=/usr/bin/dockerd --log-level=error $DOCKER_NETWORK_OPTIONS
+ExecStart=/usr/bin/dockerd --log-level=error
 LimitNOFILE=1048576
 LimitNPROC=1048576
 ExecReload=/bin/kill -s HUP $MAINPID

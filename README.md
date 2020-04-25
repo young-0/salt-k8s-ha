@@ -3,13 +3,13 @@
 - SaltStack自动化部署Kubernetes v1.15.4版本（支持HA、TLS双向认证、RBAC授权、Flannel网络、ETCD集群、Kuber-Proxy使用LVS等）。
 
 
-## 版本明细：Release-v1.15.4
+## 版本明细：Release-v1.16.9
 - 测试通过系统：CentOS 7.6
 - Kernel Version: 4.18.16-1.el7.elrepo.x86_64
 - salt-ssh:     salt-ssh 2019.2.0-1
-- Kubernetes：  v1.15.4
+- Kubernetes：  v1.16.9
 - Etcd:         v3.3.13
-- Docker-ce:    v18.09.2
+- Docker-ce:    v19.03.8
 - Flannel：     v0.11.0
 - CNI-Plugins： v0.7.4
 - nginx:        v1.16.1
@@ -27,7 +27,7 @@ IP地址 | Hostname | 最小配置 | Kernel Version
 1. 使用Salt Grains进行角色定义，增加灵活性。
 2. 使用Salt Pillar进行配置项管理，保证安全性。
 3. 使用Salt SSH执行状态，不需要安装Agent，保证通用性。
-4. 使用Kubernetes当前稳定版本v1.15.4，保证稳定性。
+4. 使用Kubernetes当前稳定版本v1.16.9，保证稳定性。
 5. 使用nginx来保证集群的高可用。
 6. KeepAlive+VIP的形式完成高可用的缺点
     - 受限于使用者的网络，无法适用于SDN网络，比如Aliyun的VPC
@@ -260,6 +260,23 @@ VIP_IF: "eth0"
 
 ```
 
+- 重置根证书
+
+```
+cd /tmp/
+curl -L https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -o cfssl
+chmod +x cfssl
+curl -L https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -o cfssljson
+chmod +x cfssljson
+curl -L https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -o cfssl-certinfo
+chmod +x cfssl-certinfo
+mkdir /tmp/cert
+cd /tmp/cert
+cp /srv/salt/k8s/templates/ca/*json .
+../cfssl gencert -initca ca-csr.json | ../cfssljson -bare ca
+\cp -f  * /srv/salt/k8s/templates/ca/
+```
+
 ## 5.执行SaltStack状态
 
 5.1 测试Salt SSH联通性
@@ -302,7 +319,7 @@ VIP_IF: "eth0"
 5.5 部署K8S集群worker节点
 
 ```bash
-[root@linux-node1 ~]# salt-ssh 'linux-node4' state.highstate
+[root@linux-node1 ~]# salt-ssh 'linux-node4' state.node
 ```
 
 5.6 设置每个节点的roles
@@ -391,7 +408,7 @@ nginx-54458cd494-zp9zp   1/1     Running   0          3m57s
 
 - 1.设置SSH无密码登录，并且在 `/etc/hosts` 中继续增加对应的解析。确保所有节点都能解析。
 - 2.在 `/etc/salt/roster` 里面，增加对应的机器。
-- 3.执行SaltStack状态 `salt-ssh 'linux-node5' state.highstate`
+- 3.执行SaltStack状态 `salt-ssh 'linux-node5' state.node`
 
 ```Bash
 [root@linux-node5 ~]# vim /etc/salt/roster
@@ -490,9 +507,3 @@ $source ~/.bashrc
 ```
 接下来就可以愉快的进行命令补全了。
 
-## 捐赠
-
-如果觉得本项目对您有帮助，请小小鼓励下项目作者，谢谢！
-支付宝码(左)和微信钱包码(右)
-![支付宝支付](images/zfb.png)
-![微信支付](images/wx.png)

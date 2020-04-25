@@ -14,4 +14,5 @@ include:
   - k8s.modules.scheduler
   - k8s.modules.kubelet
   - k8s.modules.kube-proxy
+  - k8s.modules.kubectl
   - k8s.modules.flannel

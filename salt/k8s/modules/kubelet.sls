@@ -6,7 +6,7 @@
 # Description:  Kubernetes Node kubelet
 #******************************************
 
-{% set k8s_version = "k8s-v1.15.4" %}
+{% set k8s_version = "k8s-v1.16.9" %}
 
 
 include:

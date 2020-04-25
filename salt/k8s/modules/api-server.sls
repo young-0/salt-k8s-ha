@@ -6,7 +6,7 @@
 # Description:  Kubernetes API Server
 #******************************************
 
-{% set k8s_version = "k8s-v1.15.4" %}
+{% set k8s_version = "k8s-v1.16.9" %}
 
 include:
   - k8s.modules.kubectl
